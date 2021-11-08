@@ -11,9 +11,6 @@
 
 #include <FlexCAN.h>
 
-#ifndef __MK66FX1M0__
-#error "Teensy 3.6 with dual CAN bus is required to run this example"
-#endif
 
 int busSpeed = 500000; //baudrate
 bool canBus = 0;       //use 0 CAN0 or 1 for CAN1
@@ -26,8 +23,7 @@ void setup(void)
 {
   CANbus0.begin();
 
-  delay(1000);
-  Serial.println(F("Hello Teensy 3.6 dual CAN Test."));
+  while(!Serial);
 
   /*
     msg.ext=0 -> 11 Bit ID field size, maximum size = 2^11 -1 = 2047
@@ -35,7 +31,7 @@ void setup(void)
     Note that values larger than the respective max sizes will result in overflow
   */
   msg.ext = 1;
-  msg.id = 2048; //will overflow to 0 in regular ID mode,
+  msg.id = 1; //will overflow to 0 in regular ID mode,
                  //but not in extended ID Mode
 
   msg.timeout = 1000; //How long to keep trying before message failure in milliseconds
@@ -57,6 +53,7 @@ void loop(void)
 {
   //CANbus0.write returns a 1 if successful and zero if not.
   bool writeSuccessful = CANbus0.write(msg);
+  msg.id++;
   if (writeSuccessful)
     Serial.println("write successful!");
   else
