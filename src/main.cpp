@@ -14,14 +14,14 @@
 
 int busSpeed = 500000; //baudrate
 bool canBus = 0;       //use 0 CAN0 or 1 for CAN1
-FlexCAN CANbus0(busSpeed, canBus);
+//FlexCAN Can0(busSpeed, canBus);
 
 static CAN_message_t msg;
 
 // -------------------------------------------------------------
 void setup(void)
 {
-  CANbus0.begin();
+  Can0.begin(500000);
 
   delay(1000);
   Serial.println(F("Teensy 3.6 can bus READ test"));
@@ -42,15 +42,21 @@ void printData(CAN_message_t &msg)
 void loop(void)
 {
   delay(1000);
-  Serial.println(CANbus0.available());
-  if (CANbus0.available())
+  Serial.println(Can0.available());
+
+  Can0.read(msg);
+
+  Serial.print("CAN bus 0: ");
+  printData(msg);
+
+  Serial.print("ID: ");
+  Serial.println(msg.id, HEX);
+
+  if (Can0.available())
   {
-    CANbus0.read(msg);
-
-    Serial.print("CAN bus 0: ");
-    printData(msg);
-
-    Serial.print("ID: ");
-    Serial.println(msg.id, HEX);
+    Serial.println("Can available");
+  }
+  else{
+    Serial.println("No CAN Packets found");
   }
 }
